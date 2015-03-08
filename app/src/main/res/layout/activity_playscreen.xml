@@ -19,15 +19,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TIME LEFT"
-            android:id="@+id/tvTimeLeftTitle"
-            android:layout_gravity="center_horizontal"
-            android:textColor="#fff8b200"
-            android:textSize="36sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="59"
             android:id="@+id/tvTimeLeft"
             android:layout_gravity="center_horizontal"
@@ -229,6 +220,15 @@
             android:layout_gravity="center_horizontal"
             android:textColor="#FFFFFF"
             android:textSize="36sp" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="256dp"
+            android:layout_height="32dp"
+            android:id="@+id/progressBar"
+            android:layout_gravity="center_horizontal"
+            android:progress="100" />
+
     </LinearLayout>
 
 </LinearLayout>
