@@ -1,15 +1,19 @@
 package com.example.johan.ssbk;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,19 +29,24 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     ImageButton ibBox001, ibBox002, ibBox003, ibBox004, ibBox005, ibBox006, ibBox007, ibBox008,
             ibBox009, ibBox010, ibBox011, ibBox012, ibBox013, ibBox014, ibBox015, ibBox016;
     Toast toast;
+    ProgressBar lifeBar;
     Context context;
     Activity activity;
     Handler handler001;
     Typeface font;
     Dialog dialog;
     String fontName = "coolvetica.ttf";
-    TextView tvTimeLeftTitle, tvTimeLeft, tvScoreTitle, tvScore;
+    TextView tvTimeLeft, tvScoreTitle, tvScore;
     Boolean updateTime = false;
     int catValue = 0;
     int score = 0;
     int touchX;
     int touchY;
     int totalActiveBoxes = 0;
+    int closePercent = 0;
+    int closeNr = 0;
+    int openPercent = 0;
+    int openNr = 0;
     long tillNext;
     boolean timerIsRunning = false;
     boolean hit = false;
@@ -72,12 +81,14 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
         font = Typeface.createFromAsset(getAssets(), fontName);
 
-        tvTimeLeftTitle = (TextView) findViewById(R.id.tvTimeLeftTitle);
+        lifeBar = (ProgressBar) findViewById(R.id.progressBar);
+        Drawable draw = getResources().getDrawable(R.drawable.progressbar);
+        lifeBar.setProgressDrawable(draw);
+
         tvTimeLeft = (TextView) findViewById(R.id.tvTimeLeft);
         tvScoreTitle = (TextView) findViewById(R.id.tvScoreTitle);
         tvScore = (TextView) findViewById(R.id.tvScore);
 
-        tvTimeLeftTitle.setTypeface(font);
         tvTimeLeft.setTypeface(font);
         tvScoreTitle.setTypeface(font);
         tvScore.setTypeface(font);
@@ -120,13 +131,15 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
     private void pendulumA(){
         tillNext = Cats.getWaitUntilNext(1500);
+        getOpenBoxNr();
         handler001.postDelayed(new Runnable() {
             public void run() {
-                if(totalActiveBoxes < 16){
-                    String showOrHide = "Show";
-                    int locationToShow = Cats.getLocationToShow(activeBoxes);
-                    ImageButton viewToShow = setViewToSend(locationToShow, showOrHide);
-                    Cats.showCat(viewToShow);
+                if(totalActiveBoxes < 16 && openNr == 1){
+                    showBox();
+                }
+                if(totalActiveBoxes < 15 && openNr == 2){
+                    showBox();
+                    showBox();
                 }
             }
         }, tillNext);
@@ -141,13 +154,15 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
     private void pendulumB(){
         tillNext = Cats.getWaitUntilNext(1500);
+        getOpenBoxNr();
         handler001.postDelayed(new Runnable() {
             public void run() {
-                if(totalActiveBoxes < 16){
-                    String showOrHide = "Show";
-                    int locationToShow = Cats.getLocationToShow(activeBoxes);
-                    ImageButton viewToShow = setViewToSend(locationToShow, showOrHide);
-                    Cats.showCat(viewToShow);
+                if(totalActiveBoxes < 16 && openNr == 1){
+                    showBox();
+                }
+                if(totalActiveBoxes < 15 && openNr == 2){
+                    showBox();
+                    showBox();
                 }
             }
         }, tillNext);
@@ -163,21 +178,42 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     /* THIS PENDULUM DEALS WITH CLOSING BOXES */
     private void pendulumC(){
         tillNext = Cats.getWaitUntilNext(1500);
-        if(totalActiveBoxes > 0){
+        if(totalActiveBoxes > 0) {
             int closeChance = Cats.genRand(100);
             System.out.println("Close Chance: " + String.valueOf(closeChance));
-            if(closeChance >= 25){
-                String showOrHide = "Hide";
-                int locationToHide = Cats.getLocationToHide(activeBoxes);
-                ImageButton viewToHide = setViewToSend(locationToHide, showOrHide);
-                Cats.hideCat(viewToHide);
+            if (totalActiveBoxes == 1){
+                closePercent = 50;
+                closeNr = 1;
+            }
+            if (totalActiveBoxes == 2){
+                closePercent = 30;
+                closeNr = 1;
+            }
+            if (totalActiveBoxes == 3){
+                closePercent = 25;
+                closeNr = 2;
+            }
+            if (totalActiveBoxes == 4){
+                closePercent = 10;
+                closeNr = 2;
+            }
+            if (totalActiveBoxes > 4){
+                closePercent = 10;
+                closeNr = 3;
+            }
+            if (closeChance >= closePercent && closeNr == 1) {
+                hideBox();
+            }
+            if (closeChance >= closePercent && closeNr == 2) {
+                hideBox();
+                hideBox();
+            }
+            if (closeChance >= closePercent && closeNr == 3) {
+                hideBox();
+                hideBox();
+                hideBox();
             }
         }
-
-        /*System.out.println("Array Content Pendulum C");
-        for (int i = 0; i < activeBoxes.size(); i++) {
-            System.out.println(activeBoxes.get(i));
-        }*/
 
         handler001.postDelayed(new Runnable() {
             public void run() {
@@ -628,6 +664,11 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         if(sign.equals("-")){
             score = score - value;
             tvScore.setText(String.valueOf(score));
+            int progress = lifeBar.getProgress();
+            ObjectAnimator animation = ObjectAnimator.ofInt(lifeBar, "progress", progress - 20);
+            animation.setDuration(500);
+            animation.setInterpolator(new DecelerateInterpolator());
+            animation.start();
         } else {
             score = score + value;
             tvScore.setText(String.valueOf(score));
@@ -638,6 +679,33 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     public boolean hitOrMiss(int boxNr){
         int occurrences = Collections.frequency(activeBoxes, boxNr);
         return occurrences > 0;
+    }
+
+    private void hideBox(){
+        String showOrHide = "Hide";
+        int locationToHide = Cats.getLocationToHide(activeBoxes);
+        ImageButton viewToHide = setViewToSend(locationToHide, showOrHide);
+        Cats.hideCat(viewToHide);
+    }
+
+    private void showBox(){
+        String showOrHide = "Show";
+        int locationToShow = Cats.getLocationToShow(activeBoxes);
+        ImageButton viewToShow = setViewToSend(locationToShow, showOrHide);
+        Cats.showCat(viewToShow);
+    }
+
+    private void getOpenBoxNr(){
+        if(totalActiveBoxes < 5){
+            openPercent = Cats.genRand(100);
+            if (openPercent > 85){
+                openNr = 2;
+            } else {
+                openNr = 1;
+            }
+        } else {
+            openNr = 1;
+        }
     }
 
     public class CountDown extends CountDownTimer {
@@ -669,5 +737,11 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
             timerIsRunning = false;
         }
     }
+
+    //PRINTING THE ARRAY LIST
+    /*System.out.println("Array Content Pendulum C");
+        for (int i = 0; i < activeBoxes.size(); i++) {
+            System.out.println(activeBoxes.get(i));
+        }*/
 
 }
