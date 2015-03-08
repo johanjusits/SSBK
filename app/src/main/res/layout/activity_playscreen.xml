@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ff000000"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:id="@+id/layout_root">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/layout_gameBoard"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TIME LEFT"
+            android:id="@+id/tvTimeLeftTitle"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#fff8b200"
+            android:textSize="36sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="59"
+            android:id="@+id/tvTimeLeft"
+            android:layout_gravity="center_horizontal"
+            android:textSize="36sp"
+            android:textColor="#fffffcf8"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16sp" />
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:rowCount="4"
+            android:columnCount="4"
+            android:id="@+id/boxGrid"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal"
+            android:background="#ffffff"
+            android:rowOrderPreserved="false"
+            android:onClick="onClick">
+
+            <ImageButton
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:id="@+id/ibBox001"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:src="@drawable/box_cat_normal"
+                android:scaleType="centerCrop"
+                android:background="#ffffff"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox002"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox003"
+                android:layout_row="0"
+                android:layout_column="2"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox004"
+                android:layout_row="0"
+                android:layout_column="3"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox005"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox006"
+                android:layout_row="1"
+                android:layout_column="1"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox007"
+                android:layout_row="1"
+                android:layout_column="2"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox008"
+                android:layout_row="1"
+                android:layout_column="3"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox009"
+                android:layout_row="2"
+                android:layout_column="0"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox010"
+                android:layout_row="2"
+                android:layout_column="1"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox011"
+                android:layout_row="2"
+                android:layout_column="2"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox012"
+                android:layout_row="2"
+                android:layout_column="3"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox013"
+                android:layout_row="3"
+                android:layout_column="0"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox014"
+                android:layout_row="3"
+                android:layout_column="1"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox015"
+                android:layout_row="3"
+                android:layout_column="2"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+            <ImageButton
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/ibBox016"
+                android:layout_row="3"
+                android:layout_column="3"
+                android:src="@drawable/box_cat_normal"
+                android:background="#ffffff"
+                android:scaleType="centerCrop"
+                android:visibility="invisible" />
+        </GridLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SCORE"
+            android:id="@+id/tvScoreTitle"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#fff8b200"
+            android:textSize="36sp"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:id="@+id/tvScore"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#FFFFFF"
+            android:textSize="36sp" />
+    </LinearLayout>
+
+</LinearLayout>
