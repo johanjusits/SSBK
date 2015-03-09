@@ -56,19 +56,19 @@ public class Activity_StartScreen extends Activity implements View.OnClickListen
             case R.id.bExit:
                 dialogMessage = "Do you want to quit?";
                 buttonName = "Exit";
-                dialog = DialogWindows.yesNoWindow(dialogMessage, context, activity, buttonName, font);
+                dialog = DialogWindows.yesNoWindow(dialogMessage, context, activity, buttonName, font, "Yes", "No");
                 dialog.show();
                 break;
             case R.id.bHighScore:
                 dialogMessage = "Look at high score?";
                 buttonName = "HighScore";
-                dialog = DialogWindows.yesNoWindow(dialogMessage, context, activity, buttonName, font);
+                dialog = DialogWindows.yesNoWindow(dialogMessage, context, activity, buttonName, font, "Yes", "No");
                 dialog.show();
                 break;
             case R.id.bPlay:
                 dialogMessage = "Start a game?";
                 buttonName = "Play";
-                dialog = DialogWindows.yesNoWindow(dialogMessage, context, activity, buttonName, font);
+                dialog = DialogWindows.yesNoWindow(dialogMessage, context, activity, buttonName, font, "Yes", "No");
                 dialog.show();
                 break;
         }

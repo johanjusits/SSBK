@@ -1,5 +1,6 @@
 package com.example.johan.ssbk;
 
+import android.content.Context;
 import android.widget.ImageButton;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Random;
 public class Cats {
 
     static int number;
+    static int objImg;
 
     public static int genRand(int number) {
         return new Random().nextInt(number);
@@ -44,11 +46,25 @@ public class Cats {
         return number;
     }
 
-    public static void showCat(ImageButton view){
-        view.setImageResource(R.drawable.box_cat_normal);
+    public static void showObj(ImageButton view, String imageName, Context context){
+        objImg = context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
+        view.setImageResource(objImg);
     }
 
-    public static void hideCat(ImageButton view){
+    public static void hideObj(ImageButton view){
         view.setImageResource(R.drawable.box_closed);
     }
+
+    public static String getObjImgName(){
+        int boxChance = genRand(100);
+        if(boxChance <= 10){
+            return "box_cat_lucky";
+        } else if(boxChance >= 11 && boxChance <= 30){
+            return "box_cat_bad";
+        } else if(boxChance > 30 ){
+            return "box_cat_normal";
+        }
+        return "";
+    }
+
 }

@@ -9,13 +9,15 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +30,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
     ImageButton ibBox001, ibBox002, ibBox003, ibBox004, ibBox005, ibBox006, ibBox007, ibBox008,
             ibBox009, ibBox010, ibBox011, ibBox012, ibBox013, ibBox014, ibBox015, ibBox016;
-    Toast toast;
+    ViewGroup vgBoxes;
     ProgressBar lifeBar;
     Context context;
     Activity activity;
@@ -36,20 +38,23 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     Typeface font;
     Dialog dialog;
     String fontName = "coolvetica.ttf";
-    TextView tvTimeLeft, tvScoreTitle, tvScore;
+    TextView tvTimeLeft, tvScoreTitle, tvScore, tvBoop;
     Boolean updateTime = false;
+    Animation ani_bounce;
     int catValue = 0;
     int score = 0;
-    int touchX;
-    int touchY;
     int totalActiveBoxes = 0;
     int closePercent = 0;
     int closeNr = 0;
     int openPercent = 0;
     int openNr = 0;
+    int hp = 100;
+    int objID;
     long tillNext;
     boolean timerIsRunning = false;
+    boolean zeroHp = false;
     boolean hit = false;
+    String deathMsg;
     ArrayList<Integer>activeBoxes = new ArrayList<>();
 
     private final long startTime = 59000;
@@ -58,7 +63,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_playscreen);
+        setContentView(R.layout.activity_newplayscreen);
 
         activeBoxes.add(-1);
         activeBoxes.add(-1);
@@ -79,19 +84,27 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
         declareImages();
 
+        ani_bounce = AnimationUtils.loadAnimation(this, R.anim.ani_bounce);
+
+        deathMsg = GameInfo.getDeathMsg();
+        vgBoxes = (ViewGroup) findViewById(R.id.rootLayout);
+        disable(vgBoxes);
         font = Typeface.createFromAsset(getAssets(), fontName);
 
-        lifeBar = (ProgressBar) findViewById(R.id.progressBar);
+        lifeBar = (ProgressBar) findViewById(R.id.pbLifeBar);
         Drawable draw = getResources().getDrawable(R.drawable.progressbar);
         lifeBar.setProgressDrawable(draw);
 
         tvTimeLeft = (TextView) findViewById(R.id.tvTimeLeft);
         tvScoreTitle = (TextView) findViewById(R.id.tvScoreTitle);
         tvScore = (TextView) findViewById(R.id.tvScore);
+        tvBoop = (TextView) findViewById(R.id.tvBoop);
 
         tvTimeLeft.setTypeface(font);
         tvScoreTitle.setTypeface(font);
         tvScore.setTypeface(font);
+        tvBoop.setTypeface(font);
+        tvBoop.bringToFront();
 
         tvScore.setText(String.valueOf(score));
 
@@ -124,6 +137,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 CountDown counter = new CountDown(startTime, interval);
                 counter.start();
                 timerIsRunning = true;
+                enable(vgBoxes);
                 pendulumA();
             }
         }, 8500);
@@ -180,7 +194,6 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         tillNext = Cats.getWaitUntilNext(1500);
         if(totalActiveBoxes > 0) {
             int closeChance = Cats.genRand(100);
-            System.out.println("Close Chance: " + String.valueOf(closeChance));
             if (totalActiveBoxes == 1){
                 closePercent = 50;
                 closeNr = 1;
@@ -227,11 +240,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.ibBox001:
+            case R.id.ibObj001:
                 hit = hitOrMiss(0);
                 if (hit){
+                    objID = ibBox001.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox001);
+                    Cats.hideObj(ibBox001);
                     int index = getIndexToClear(0);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -239,23 +254,27 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox002:
+            case R.id.ibObj002:
                 hit = hitOrMiss(1);
                 if (hit){
+                    objID = ibBox002.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox002);
+                    Cats.hideObj(ibBox002);
                     int index = getIndexToClear(1);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
                 } else {
-                    updateScore(1, "-");;
+                    updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox003:
+            case R.id.ibObj003:
                 hit = hitOrMiss(2);
                 if (hit){
+                    objID = ibBox003.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox003);
+                    Cats.hideObj(ibBox003);
                     int index = getIndexToClear(2);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -263,11 +282,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox004:
+            case R.id.ibObj004:
                 hit = hitOrMiss(3);
                 if (hit){
+                    objID = ibBox004.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox004);
+                    Cats.hideObj(ibBox004);
                     int index = getIndexToClear(3);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -275,11 +296,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox005:
+            case R.id.ibObj005:
                 hit = hitOrMiss(4);
                 if (hit){
+                    objID = ibBox005.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox005);
+                    Cats.hideObj(ibBox005);
                     int index = getIndexToClear(4);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -287,11 +310,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox006:
+            case R.id.ibObj006:
                 hit = hitOrMiss(5);
                 if (hit){
+                    objID = ibBox006.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox006);
+                    Cats.hideObj(ibBox006);
                     int index = getIndexToClear(5);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -299,11 +324,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox007:
+            case R.id.ibObj007:
                 hit = hitOrMiss(6);
                 if (hit){
+                    objID = ibBox007.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox007);
+                    Cats.hideObj(ibBox007);
                     int index = getIndexToClear(6);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -311,11 +338,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox008:
+            case R.id.ibObj008:
                 hit = hitOrMiss(7);
                 if (hit){
+                    objID = ibBox008.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox008);
+                    Cats.hideObj(ibBox008);
                     int index = getIndexToClear(7);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -323,11 +352,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox009:
+            case R.id.ibObj009:
                 hit = hitOrMiss(8);
                 if (hit){
+                    objID = ibBox009.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox009);
+                    Cats.hideObj(ibBox009);
                     int index = getIndexToClear(8);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -335,11 +366,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox010:
+            case R.id.ibObj010:
                 hit = hitOrMiss(9);
                 if (hit){
+                    objID = ibBox010.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox010);
+                    Cats.hideObj(ibBox010);
                     int index = getIndexToClear(9);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -347,11 +380,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox011:
+            case R.id.ibObj011:
                 hit = hitOrMiss(10);
                 if (hit){
+                    objID = ibBox011.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox011);
+                    Cats.hideObj(ibBox011);
                     int index = getIndexToClear(10);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -359,11 +394,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox012:
+            case R.id.ibObj012:
                 hit = hitOrMiss(11);
                 if (hit){
+                    objID = ibBox012.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox012);
+                    Cats.hideObj(ibBox012);
                     int index = getIndexToClear(11);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -371,11 +408,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox013:
+            case R.id.ibObj013:
                 hit = hitOrMiss(12);
                 if (hit){
+                    objID = ibBox013.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox013);
+                    Cats.hideObj(ibBox013);
                     int index = getIndexToClear(12);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -383,11 +422,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox014:
+            case R.id.ibObj014:
                 hit = hitOrMiss(13);
                 if (hit){
+                    objID = ibBox014.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox014);
+                    Cats.hideObj(ibBox014);
                     int index = getIndexToClear(13);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -395,11 +436,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox015:
+            case R.id.ibObj015:
                 hit = hitOrMiss(14);
                 if (hit){
+                    objID = ibBox015.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox015);
+                    Cats.hideObj(ibBox015);
                     int index = getIndexToClear(14);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -407,11 +450,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     updateScore(1, "-");
                 }
                 break;
-            case R.id.ibBox016:
+            case R.id.ibObj016:
                 hit = hitOrMiss(15);
                 if (hit){
+                    objID = ibBox016.getId();
+                    animateMsg(objID);
                     totalActiveBoxes--;
-                    Cats.hideCat(ibBox016);
+                    Cats.hideObj(ibBox016);
                     int index = getIndexToClear(15);
                     activeBoxes.set(index, -1);
                     updateScore(1, "+");
@@ -420,18 +465,6 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 }
                 break;
         }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        touchX = (int)event.getX();
-        touchY = (int)event.getY();
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
-            case MotionEvent.ACTION_UP:
-        }
-        return true;
     }
 
     public void updateTimer(long newStartTime, long newInterval){
@@ -622,37 +655,37 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     }
 
     private void declareImages(){
-        ibBox001 = (ImageButton) findViewById(R.id.ibBox001);
+        ibBox001 = (ImageButton) findViewById(R.id.ibObj001);
         ibBox001.setOnClickListener(this);
-        ibBox002 = (ImageButton) findViewById(R.id.ibBox002);
+        ibBox002 = (ImageButton) findViewById(R.id.ibObj002);
         ibBox002.setOnClickListener(this);
-        ibBox003 = (ImageButton) findViewById(R.id.ibBox003);
+        ibBox003 = (ImageButton) findViewById(R.id.ibObj003);
         ibBox003.setOnClickListener(this);
-        ibBox004 = (ImageButton) findViewById(R.id.ibBox004);
+        ibBox004 = (ImageButton) findViewById(R.id.ibObj004);
         ibBox004.setOnClickListener(this);
-        ibBox005 = (ImageButton) findViewById(R.id.ibBox005);
+        ibBox005 = (ImageButton) findViewById(R.id.ibObj005);
         ibBox005.setOnClickListener(this);
-        ibBox006 = (ImageButton) findViewById(R.id.ibBox006);
+        ibBox006 = (ImageButton) findViewById(R.id.ibObj006);
         ibBox006.setOnClickListener(this);
-        ibBox007 = (ImageButton) findViewById(R.id.ibBox007);
+        ibBox007 = (ImageButton) findViewById(R.id.ibObj007);
         ibBox007.setOnClickListener(this);
-        ibBox008 = (ImageButton) findViewById(R.id.ibBox008);
+        ibBox008 = (ImageButton) findViewById(R.id.ibObj008);
         ibBox008.setOnClickListener(this);
-        ibBox009 = (ImageButton) findViewById(R.id.ibBox009);
+        ibBox009 = (ImageButton) findViewById(R.id.ibObj009);
         ibBox009.setOnClickListener(this);
-        ibBox010 = (ImageButton) findViewById(R.id.ibBox010);
+        ibBox010 = (ImageButton) findViewById(R.id.ibObj010);
         ibBox010.setOnClickListener(this);
-        ibBox011 = (ImageButton) findViewById(R.id.ibBox011);
+        ibBox011 = (ImageButton) findViewById(R.id.ibObj011);
         ibBox011.setOnClickListener(this);
-        ibBox012 = (ImageButton) findViewById(R.id.ibBox012);
+        ibBox012 = (ImageButton) findViewById(R.id.ibObj012);
         ibBox012.setOnClickListener(this);
-        ibBox013 = (ImageButton) findViewById(R.id.ibBox013);
+        ibBox013 = (ImageButton) findViewById(R.id.ibObj013);
         ibBox013.setOnClickListener(this);
-        ibBox014 = (ImageButton) findViewById(R.id.ibBox014);
+        ibBox014 = (ImageButton) findViewById(R.id.ibObj014);
         ibBox014.setOnClickListener(this);
-        ibBox015 = (ImageButton) findViewById(R.id.ibBox015);
+        ibBox015 = (ImageButton) findViewById(R.id.ibObj015);
         ibBox015.setOnClickListener(this);
-        ibBox016 = (ImageButton) findViewById(R.id.ibBox016);
+        ibBox016 = (ImageButton) findViewById(R.id.ibObj016);
         ibBox016.setOnClickListener(this);
     }
 
@@ -665,10 +698,15 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
             score = score - value;
             tvScore.setText(String.valueOf(score));
             int progress = lifeBar.getProgress();
+            hp = hp - 20;
             ObjectAnimator animation = ObjectAnimator.ofInt(lifeBar, "progress", progress - 20);
             animation.setDuration(500);
             animation.setInterpolator(new DecelerateInterpolator());
             animation.start();
+            System.out.println("HP: " + String.valueOf(hp));
+            if(hp <= 0){
+                zeroHp = true;
+            }
         } else {
             score = score + value;
             tvScore.setText(String.valueOf(score));
@@ -681,24 +719,38 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         return occurrences > 0;
     }
 
+    private void animateMsg(int objId){
+        tvBoop.setVisibility(View.VISIBLE);
+
+        RelativeLayout.LayoutParams objMsgSettings = (RelativeLayout.LayoutParams) tvBoop.getLayoutParams();
+        objMsgSettings.addRule(RelativeLayout.ABOVE, objId);
+
+        objMsgSettings.addRule(RelativeLayout.ALIGN_LEFT, objId);
+        objMsgSettings.addRule(RelativeLayout.ALIGN_RIGHT, 0);
+
+        tvBoop.setLayoutParams(objMsgSettings);
+        tvBoop.startAnimation(ani_bounce);
+    }
+
     private void hideBox(){
         String showOrHide = "Hide";
         int locationToHide = Cats.getLocationToHide(activeBoxes);
         ImageButton viewToHide = setViewToSend(locationToHide, showOrHide);
-        Cats.hideCat(viewToHide);
+        Cats.hideObj(viewToHide);
     }
 
     private void showBox(){
         String showOrHide = "Show";
+        String objToShow = Cats.getObjImgName();
         int locationToShow = Cats.getLocationToShow(activeBoxes);
         ImageButton viewToShow = setViewToSend(locationToShow, showOrHide);
-        Cats.showCat(viewToShow);
+        Cats.showObj(viewToShow, objToShow, context);
     }
 
     private void getOpenBoxNr(){
         if(totalActiveBoxes < 5){
             openPercent = Cats.genRand(100);
-            if (openPercent > 85){
+            if (openPercent > 65){
                 openNr = 2;
             } else {
                 openNr = 1;
@@ -706,6 +758,34 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         } else {
             openNr = 1;
         }
+    }
+
+    /* DISABLES THE INTERFACE, PREVENTING PLAYER FROM CLICKING THE BOXES */
+    private static void disable(ViewGroup layout) {
+        layout.setEnabled(false);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                disable((ViewGroup) child);
+            } else {
+                child.setEnabled(false);
+            }
+        }
+
+    }
+
+    /* ENABLES THE INTERFACE */
+    private static void enable(ViewGroup layout) {
+        layout.setEnabled(false);
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            View child = layout.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                enable((ViewGroup) child);
+            } else {
+                child.setEnabled(true);
+            }
+        }
+
     }
 
     public class CountDown extends CountDownTimer {
@@ -716,6 +796,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
         @Override
         public void onTick(long millisUntilFinished) {
+            if(zeroHp){
+                dialog = DialogWindows.youDiedWindow("YOU DIED!", context, activity, "Restart", font, "Restart", "Exit", deathMsg);
+                dialog.show();
+                timerIsRunning = false;
+                disable(vgBoxes);
+                cancel();
+            }
             if(updateTime){
                 long newTime = millisUntilFinished + 5000;
                 long interval = 1000;
@@ -735,6 +822,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         public void onFinish() {
             tvTimeLeft.setText("Time's up!");
             timerIsRunning = false;
+            disable(vgBoxes);
         }
     }
 

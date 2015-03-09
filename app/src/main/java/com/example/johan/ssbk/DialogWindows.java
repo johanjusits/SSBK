@@ -25,7 +25,8 @@ public class DialogWindows {
     static Toast toast;
     static Intent intentStartGame;
 
-    public static Dialog yesNoWindow(String msg, final Context context, final Activity activity, final String buttonName, Typeface font){
+    public static Dialog yesNoWindow(String msg, final Context context, final Activity activity, final String buttonName, Typeface font,
+                                     String yesButtonText, String noButtonText){
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_yesorno);
@@ -39,6 +40,7 @@ public class DialogWindows {
         /* YES CLICKED */
         Button buttonDialogYes = (Button) dialog.findViewById(R.id.bConfirmOk);
         buttonDialogYes.setTypeface(font);
+        buttonDialogYes.setText(yesButtonText);
         buttonDialogYes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 switch (buttonName){
@@ -66,9 +68,60 @@ public class DialogWindows {
         /* NO CLICKED */
         Button buttonDialogNo = (Button) dialog.findViewById(R.id.bConfirmCancel);
         buttonDialogNo.setTypeface(font);
+        buttonDialogNo.setText(noButtonText);
         buttonDialogNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                dialog.dismiss();
+                if(buttonName.equals("Restart")){
+                    dialog.dismiss();
+                    activity.finish();
+                } else {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        return dialog;
+    }
+
+    public static Dialog youDiedWindow(String msg, final Context context, final Activity activity, final String buttonName, Typeface font,
+                                     String yesButtonText, String noButtonText, String deathMsg){
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_youdied);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(TRANSPARENT));
+        dialog.setCancelable(false);
+
+        TextView tvText = (TextView) dialog.findViewById(R.id.tvMsg);
+        TextView tvDeathMsg = (TextView) dialog.findViewById(R.id.tvRdmDeathMsg);
+        tvText.setText(msg);
+        tvDeathMsg.setText(deathMsg);
+        tvText.setTypeface(font);
+        tvDeathMsg.setTypeface(font);
+
+        /* YES CLICKED */
+        Button buttonDialogYes = (Button) dialog.findViewById(R.id.bConfirmOk);
+        buttonDialogYes.setTypeface(font);
+        buttonDialogYes.setText(yesButtonText);
+        buttonDialogYes.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                 activity.finish();
+                 activity.overridePendingTransition(0, 0);
+                 dialog.dismiss();
+            }
+        });
+
+        /* NO CLICKED */
+        Button buttonDialogNo = (Button) dialog.findViewById(R.id.bConfirmCancel);
+        buttonDialogNo.setTypeface(font);
+        buttonDialogNo.setText(noButtonText);
+        buttonDialogNo.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(buttonName.equals("Restart")){
+                    dialog.dismiss();
+                    activity.finish();
+                } else {
+                    dialog.dismiss();
+                }
             }
         });
 
@@ -121,6 +174,5 @@ public class DialogWindows {
 
         return dialog;
     }
-
 
 }
