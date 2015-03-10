@@ -59,8 +59,9 @@
         android:textStyle="bold"
         android:layout_above="@+id/ibObj001"
         android:layout_alignLeft="@+id/ibObj001"
-        android:layout_marginLeft="12dp"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        android:textSize="18sp"
+        android:layout_marginLeft="6dp" />
 
     <ImageButton
         android:layout_width="64dp"

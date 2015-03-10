@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="textBlack">#000000</color>
+    <color name="textWhite">#FFFFFF</color>
+    <color name="textGreen">#ff2f8813</color>
+    <color name="textRed">#ff9e0e0e</color>
+    <color name="supergreen">#3DFF00</color>
+    <color name="superyellow">#ffffe21c</color>
+    <color name="card_field_color">#ffaeb25e</color>
+    <color name="card_ailment_color">#FF92806C</color>
+    <color name="card_boosting_color">#fffeb100</color>
+    <color name="textBrightRed">#ffff1313</color>
+    <color name="textBoopBlue">#ff3183e3</color>
+
+</resources>
