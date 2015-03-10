@@ -35,13 +35,14 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     Context context;
     Activity activity;
     Handler handler001;
-    Typeface font;
+    Typeface font, boopFont;
     Dialog dialog;
     String fontName = "coolvetica.ttf";
+    String boopMsg = "BOOP!";
+    String missMsg = "MISS!";
     TextView tvTimeLeft, tvScoreTitle, tvScore, tvBoop;
     Boolean updateTime = false;
     Animation ani_bounce;
-    int catValue = 0;
     int score = 0;
     int totalActiveBoxes = 0;
     int closePercent = 0;
@@ -50,12 +51,19 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     int openNr = 0;
     int hp = 100;
     int objID;
+    int boopColor;
+    int missColor;
+    public static int obj001Value = 0, obj002Value = 0, obj003Value = 0, obj004Value = 0, obj005Value = 0, obj006Value = 0, obj007Value = 0, obj008Value = 0,
+            obj009Value = 0, obj010Value = 0, obj011Value = 0, obj012Value = 0, obj013Value = 0, obj014Value = 0, obj015Value = 0, obj016Value = 0;
     long tillNext;
     boolean timerIsRunning = false;
     boolean zeroHp = false;
     boolean hit = false;
     String deathMsg;
-    ArrayList<Integer>activeBoxes = new ArrayList<>();
+    String textBoopBlue = "textBoopBlue";
+    String textWhite = "textWhite";
+    public static String plusOrMinus = "+";
+    ArrayList<Integer> activeObjects = new ArrayList<>();
 
     private final long startTime = 59000;
     private final long interval = 1000;
@@ -65,36 +73,50 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newplayscreen);
 
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
-        activeBoxes.add(-1);
+        context = Activity_PlayScreen.this;
+        activity = Activity_PlayScreen.this;
+
+        // ADDING DEFAULT VALUES TO THE OBJECTS ARRAY
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
+        activeObjects.add(-1);
 
         declareImages();
 
+        // TEXT COLORS
+        boopColor = context.getResources().getIdentifier(textBoopBlue, "color", getPackageName());
+        missColor = context.getResources().getIdentifier(textWhite, "color", getPackageName());
+
+        // ANIMATIONS
         ani_bounce = AnimationUtils.loadAnimation(this, R.anim.ani_bounce);
 
+        // DEATH MESSAGE AND OBJECTS SETUP
         deathMsg = GameInfo.getDeathMsg();
         vgBoxes = (ViewGroup) findViewById(R.id.rootLayout);
         disable(vgBoxes);
+
+        // FONT
         font = Typeface.createFromAsset(getAssets(), fontName);
 
+        // LIFE PROGRESS BAR
         lifeBar = (ProgressBar) findViewById(R.id.pbLifeBar);
         Drawable draw = getResources().getDrawable(R.drawable.progressbar);
         lifeBar.setProgressDrawable(draw);
 
+        // TEXTVIEWS
         tvTimeLeft = (TextView) findViewById(R.id.tvTimeLeft);
         tvScoreTitle = (TextView) findViewById(R.id.tvScoreTitle);
         tvScore = (TextView) findViewById(R.id.tvScore);
@@ -109,9 +131,6 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         tvScore.setText(String.valueOf(score));
 
         tvTimeLeft.setText("59");
-
-        context = Activity_PlayScreen.this;
-        activity = Activity_PlayScreen.this;
 
         handler001 = new Handler();
 
@@ -145,7 +164,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
     private void pendulumA(){
         tillNext = Cats.getWaitUntilNext(1500);
-        getOpenBoxNr();
+        setOpenBoxNr();
         handler001.postDelayed(new Runnable() {
             public void run() {
                 if(totalActiveBoxes < 16 && openNr == 1){
@@ -168,7 +187,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
     private void pendulumB(){
         tillNext = Cats.getWaitUntilNext(1500);
-        getOpenBoxNr();
+        setOpenBoxNr();
         handler001.postDelayed(new Runnable() {
             public void run() {
                 if(totalActiveBoxes < 16 && openNr == 1){
@@ -237,230 +256,250 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         }, tillNext + 500);
     }
 
+    private void hitSuccesful(){
+
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.ibObj001:
                 hit = hitOrMiss(0);
+                objID = ibBox001.getId();
                 if (hit){
-                    objID = ibBox001.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox001);
                     int index = getIndexToClear(0);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj001Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj002:
                 hit = hitOrMiss(1);
+                objID = ibBox002.getId();
                 if (hit){
-                    objID = ibBox002.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox002);
                     int index = getIndexToClear(1);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj002Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj003:
                 hit = hitOrMiss(2);
+                objID = ibBox003.getId();
                 if (hit){
-                    objID = ibBox003.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox003);
                     int index = getIndexToClear(2);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj003Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj004:
                 hit = hitOrMiss(3);
+                objID = ibBox004.getId();
                 if (hit){
-                    objID = ibBox004.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox004);
                     int index = getIndexToClear(3);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj004Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj005:
                 hit = hitOrMiss(4);
+                objID = ibBox005.getId();
                 if (hit){
-                    objID = ibBox005.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox005);
                     int index = getIndexToClear(4);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj005Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj006:
                 hit = hitOrMiss(5);
+                objID = ibBox006.getId();
                 if (hit){
-                    objID = ibBox006.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox006);
                     int index = getIndexToClear(5);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj006Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj007:
                 hit = hitOrMiss(6);
+                objID = ibBox007.getId();
                 if (hit){
-                    objID = ibBox007.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox007);
                     int index = getIndexToClear(6);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj007Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj008:
                 hit = hitOrMiss(7);
+                objID = ibBox008.getId();
                 if (hit){
-                    objID = ibBox008.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox008);
                     int index = getIndexToClear(7);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj008Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj009:
                 hit = hitOrMiss(8);
+                objID = ibBox009.getId();
                 if (hit){
-                    objID = ibBox009.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox009);
                     int index = getIndexToClear(8);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj009Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj010:
                 hit = hitOrMiss(9);
+                objID = ibBox010.getId();
                 if (hit){
-                    objID = ibBox010.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox010);
                     int index = getIndexToClear(9);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj010Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj011:
                 hit = hitOrMiss(10);
+                objID = ibBox011.getId();
                 if (hit){
-                    objID = ibBox011.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox011);
                     int index = getIndexToClear(10);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj011Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj012:
                 hit = hitOrMiss(11);
+                objID = ibBox012.getId();
                 if (hit){
-                    objID = ibBox012.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox012);
                     int index = getIndexToClear(11);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj012Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj013:
                 hit = hitOrMiss(12);
+                objID = ibBox013.getId();
                 if (hit){
-                    objID = ibBox013.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox013);
                     int index = getIndexToClear(12);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj013Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj014:
                 hit = hitOrMiss(13);
+                objID = ibBox014.getId();
                 if (hit){
-                    objID = ibBox014.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox014);
                     int index = getIndexToClear(13);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj014Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj015:
                 hit = hitOrMiss(14);
+                objID = ibBox015.getId();
                 if (hit){
-                    objID = ibBox015.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox015);
                     int index = getIndexToClear(14);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj015Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj016:
                 hit = hitOrMiss(15);
+                objID = ibBox016.getId();
                 if (hit){
-                    objID = ibBox016.getId();
-                    animateMsg(objID);
+                    animateMsg(objID, boopMsg, boopColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox016);
                     int index = getIndexToClear(15);
-                    activeBoxes.set(index, -1);
-                    updateScore(1, "+");
+                    activeObjects.set(index, -1);
+                    updateScore(obj016Value, plusOrMinus);
                 } else {
+                    animateMsg(objID, missMsg, missColor);
                     updateScore(1, "-");
                 }
                 break;
@@ -475,177 +514,177 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     public ImageButton setViewToSend(int location, String showOrHide){
         switch (location) {
             case 0:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(0, 0);
+                        activeObjects.set(0, 0);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(0, -1);
+                        activeObjects.set(0, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox001;
             case 1:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(1, 1);
+                        activeObjects.set(1, 1);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(1, -1);
+                        activeObjects.set(1, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox002;
             case 2:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(2, 2);
+                        activeObjects.set(2, 2);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(2, -1);
+                        activeObjects.set(2, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox003;
             case 3:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(3, 3);
+                        activeObjects.set(3, 3);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(3, -1);
+                        activeObjects.set(3, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox004;
             case 4:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(4, 4);
+                        activeObjects.set(4, 4);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(4, -1);
+                        activeObjects.set(4, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox005;
             case 5:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(5, 5);
+                        activeObjects.set(5, 5);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(5, -1);
+                        activeObjects.set(5, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox006;
             case 6:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(6, 6);
+                        activeObjects.set(6, 6);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(6, -1);
+                        activeObjects.set(6, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox007;
             case 7:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(7, 7);
+                        activeObjects.set(7, 7);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(7, -1);
+                        activeObjects.set(7, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox008;
             case 8:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(8, 8);
+                        activeObjects.set(8, 8);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(8, -1);
+                        activeObjects.set(8, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox009;
             case 9:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(9, 9);
+                        activeObjects.set(9, 9);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(9, -1);
+                        activeObjects.set(9, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox010;
             case 10:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(10, 10);
+                        activeObjects.set(10, 10);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(10, -1);
+                        activeObjects.set(10, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox011;
             case 11:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(11, 11);
+                        activeObjects.set(11, 11);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(11, -1);
+                        activeObjects.set(11, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox012;
             case 12:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(12, 12);
+                        activeObjects.set(12, 12);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(12, -1);
+                        activeObjects.set(12, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox013;
             case 13:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(13, 13);
+                        activeObjects.set(13, 13);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(13, -1);
+                        activeObjects.set(13, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox014;
             case 14:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(14, 14);
+                        activeObjects.set(14, 14);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(14, -1);
+                        activeObjects.set(14, -1);
                         totalActiveBoxes--;
                     }
                 }
                 return ibBox015;
             case 15:
-                if (!activeBoxes.isEmpty()){
+                if (!activeObjects.isEmpty()){
                     if (showOrHide.equals("Show")){
-                        activeBoxes.set(15, 15);
+                        activeObjects.set(15, 15);
                         totalActiveBoxes++;
                     } else {
-                        activeBoxes.set(15, -1);
+                        activeObjects.set(15, -1);
                         totalActiveBoxes--;
                     }
                 }
@@ -690,7 +729,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     }
 
     public int getIndexToClear(int boxNr){
-        return activeBoxes.indexOf(boxNr);
+        return activeObjects.indexOf(boxNr);
     }
 
     private void updateScore(int value, String sign){
@@ -703,7 +742,6 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
             animation.setDuration(500);
             animation.setInterpolator(new DecelerateInterpolator());
             animation.start();
-            System.out.println("HP: " + String.valueOf(hp));
             if(hp <= 0){
                 zeroHp = true;
             }
@@ -715,18 +753,21 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     }
 
     public boolean hitOrMiss(int boxNr){
-        int occurrences = Collections.frequency(activeBoxes, boxNr);
+        int occurrences = Collections.frequency(activeObjects, boxNr);
         return occurrences > 0;
     }
 
-    private void animateMsg(int objId){
+    private void animateMsg(int objId, String msg, int color) /* + int margin */{
         tvBoop.setVisibility(View.VISIBLE);
+        tvBoop.setText(msg);
+        tvBoop.setTextColor(getResources().getColor(color));
 
         RelativeLayout.LayoutParams objMsgSettings = (RelativeLayout.LayoutParams) tvBoop.getLayoutParams();
         objMsgSettings.addRule(RelativeLayout.ABOVE, objId);
 
         objMsgSettings.addRule(RelativeLayout.ALIGN_LEFT, objId);
         objMsgSettings.addRule(RelativeLayout.ALIGN_RIGHT, 0);
+        //objMsgSettings.setMargins(margin, 0, 0 , 0);
 
         tvBoop.setLayoutParams(objMsgSettings);
         tvBoop.startAnimation(ani_bounce);
@@ -734,7 +775,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
     private void hideBox(){
         String showOrHide = "Hide";
-        int locationToHide = Cats.getLocationToHide(activeBoxes);
+        int locationToHide = Cats.getLocationToHide(activeObjects);
         ImageButton viewToHide = setViewToSend(locationToHide, showOrHide);
         Cats.hideObj(viewToHide);
     }
@@ -742,12 +783,13 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     private void showBox(){
         String showOrHide = "Show";
         String objToShow = Cats.getObjImgName();
-        int locationToShow = Cats.getLocationToShow(activeBoxes);
+        int locationToShow = Cats.getLocationToShow(activeObjects);
         ImageButton viewToShow = setViewToSend(locationToShow, showOrHide);
+        Cats.setObjValue(locationToShow, objToShow);
         Cats.showObj(viewToShow, objToShow, context);
     }
 
-    private void getOpenBoxNr(){
+    private void setOpenBoxNr(){
         if(totalActiveBoxes < 5){
             openPercent = Cats.genRand(100);
             if (openPercent > 65){
@@ -828,8 +870,8 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
     //PRINTING THE ARRAY LIST
     /*System.out.println("Array Content Pendulum C");
-        for (int i = 0; i < activeBoxes.size(); i++) {
-            System.out.println(activeBoxes.get(i));
+        for (int i = 0; i < activeObjects.size(); i++) {
+            System.out.println(activeObjects.get(i));
         }*/
 
 }
