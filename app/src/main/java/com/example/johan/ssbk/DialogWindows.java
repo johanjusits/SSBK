@@ -83,8 +83,8 @@ public class DialogWindows {
         return dialog;
     }
 
-    public static Dialog youDiedWindow(String msg, final Context context, final Activity activity, final String buttonName, Typeface font,
-                                     String yesButtonText, String noButtonText, String deathMsg){
+    public static Dialog gameOverWindow(String msg, final Context context, final Activity activity, Typeface font,
+                                        String yesButtonText, String noButtonText, String gameOverMsg){
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_youdied);
@@ -94,7 +94,7 @@ public class DialogWindows {
         TextView tvText = (TextView) dialog.findViewById(R.id.tvMsg);
         TextView tvDeathMsg = (TextView) dialog.findViewById(R.id.tvRdmDeathMsg);
         tvText.setText(msg);
-        tvDeathMsg.setText(deathMsg);
+        tvDeathMsg.setText(gameOverMsg);
         tvText.setTypeface(font);
         tvDeathMsg.setTypeface(font);
 
@@ -104,9 +104,10 @@ public class DialogWindows {
         buttonDialogYes.setText(yesButtonText);
         buttonDialogYes.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                 activity.finish();
-                 activity.overridePendingTransition(0, 0);
-                 dialog.dismiss();
+                Intent intent = activity.getIntent();
+                activity.finish();
+                activity.startActivity(intent);
+                dialog.dismiss();
             }
         });
 
@@ -116,12 +117,8 @@ public class DialogWindows {
         buttonDialogNo.setText(noButtonText);
         buttonDialogNo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if(buttonName.equals("Restart")){
-                    dialog.dismiss();
-                    activity.finish();
-                } else {
-                    dialog.dismiss();
-                }
+                dialog.dismiss();
+                activity.finish();
             }
         });
 
@@ -140,37 +137,25 @@ public class DialogWindows {
         tvText.setText(msg);
         tvText.setTypeface(font);
         tvCountDown.setTypeface(font);
-        tvCountDown.setText("00:05");
-
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                tvCountDown.setText("00:04");
-            }
-        }, 1000);
-
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                tvCountDown.setText("00:03");
-            }
-        }, 2000);
+        tvCountDown.setText("00:03");
 
         handler.postDelayed(new Runnable() {
             public void run() {
                 tvCountDown.setText("00:02");
             }
-        }, 3000);
+        }, 1000);
 
         handler.postDelayed(new Runnable() {
             public void run() {
                 tvCountDown.setText("00:01");
             }
-        }, 4000);
+        }, 2000);
 
         handler.postDelayed(new Runnable() {
             public void run() {
                 tvCountDown.setText("00:00");
             }
-        }, 5000);
+        }, 3000);
 
         return dialog;
     }
