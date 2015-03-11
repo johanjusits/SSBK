@@ -1,6 +1,7 @@
 package com.example.johan.ssbk;
 
 import android.content.Context;
+import android.os.Handler;
 import android.widget.ImageButton;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class Cats {
     static String badCat = "box_cat_bad";
     static String plus = "+";
     static String minus = "-";
+    static Handler handler;
 
     public static int genRand(int number) {
         return new Random().nextInt(number);
@@ -59,7 +61,7 @@ public class Cats {
         view.setImageResource(objImg);
     }
 
-    public static void hideObj(ImageButton view){
+    public static void hideObj(final ImageButton view){
         view.setImageResource(R.drawable.box_closed);
     }
 
@@ -78,6 +80,7 @@ public class Cats {
     public static void setObjValue(int location, String objName){
         switch (location) {
             case 0:
+                Activity_PlayScreen.obj001Image = objName;
                 switch (objName){
                 case "box_cat_normal":
                     Activity_PlayScreen.obj001Value = normalCatValue;
@@ -94,6 +97,7 @@ public class Cats {
             }
             break;
             case 1:
+                Activity_PlayScreen.obj002Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj002Value = normalCatValue;
@@ -110,6 +114,7 @@ public class Cats {
                 }
             break;
             case 2:
+                Activity_PlayScreen.obj003Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj003Value = normalCatValue;
@@ -126,6 +131,7 @@ public class Cats {
                 }
             break;
             case 3:
+                Activity_PlayScreen.obj004Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj004Value = normalCatValue;
@@ -142,6 +148,7 @@ public class Cats {
                 }
             break;
             case 4:
+                Activity_PlayScreen.obj005Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj005Value = normalCatValue;
@@ -158,6 +165,7 @@ public class Cats {
                 }
             break;
             case 5:
+                Activity_PlayScreen.obj006Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj006Value = normalCatValue;
@@ -174,6 +182,7 @@ public class Cats {
                 }
             break;
             case 6:
+                Activity_PlayScreen.obj007Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj007Value = normalCatValue;
@@ -190,6 +199,7 @@ public class Cats {
                 }
             break;
             case 7:
+                Activity_PlayScreen.obj008Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj008Value = normalCatValue;
@@ -206,6 +216,7 @@ public class Cats {
                 }
             break;
             case 8:
+                Activity_PlayScreen.obj009Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj009Value = normalCatValue;
@@ -222,6 +233,7 @@ public class Cats {
                 }
             break;
             case 9:
+                Activity_PlayScreen.obj010Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj010Value = normalCatValue;
@@ -238,6 +250,7 @@ public class Cats {
                 }
             break;
             case 10:
+                Activity_PlayScreen.obj011Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj011Value = normalCatValue;
@@ -254,6 +267,7 @@ public class Cats {
                 }
             break;
             case 11:
+                Activity_PlayScreen.obj012Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj012Value = normalCatValue;
@@ -270,6 +284,7 @@ public class Cats {
                 }
             break;
             case 12:
+                Activity_PlayScreen.obj013Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj013Value = normalCatValue;
@@ -286,6 +301,7 @@ public class Cats {
                 }
             break;
             case 13:
+                Activity_PlayScreen.obj014Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj014Value = normalCatValue;
@@ -302,6 +318,7 @@ public class Cats {
                 }
             break;
             case 14:
+                Activity_PlayScreen.obj015Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj015Value = normalCatValue;
@@ -318,6 +335,7 @@ public class Cats {
                 }
             break;
             case 15:
+                Activity_PlayScreen.obj016Image = objName;
                 switch (objName){
                     case "box_cat_normal":
                         Activity_PlayScreen.obj016Value = normalCatValue;

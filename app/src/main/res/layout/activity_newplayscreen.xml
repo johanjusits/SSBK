@@ -52,16 +52,16 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="BOOP!"
+        android:text="MISS!"
         android:id="@+id/tvBoop"
         android:layout_gravity="center_horizontal"
-        android:textColor="#ff3183e3"
+        android:textColor="#ffffff"
         android:textStyle="bold"
         android:layout_above="@+id/ibObj001"
         android:layout_alignLeft="@+id/ibObj001"
         android:visibility="invisible"
         android:textSize="18sp"
-        android:layout_marginLeft="6dp" />
+        android:background="@drawable/msg_bg_red" />
 
     <ImageButton
         android:layout_width="64dp"

@@ -1,19 +1,19 @@
 package com.example.johan.ssbk;
 
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -34,14 +34,16 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     ProgressBar lifeBar;
     Context context;
     Activity activity;
-    Handler handler001;
-    Typeface font, boopFont;
+    Handler handler001, handler002, handler003;
+    Typeface font;
     Dialog dialog;
     String fontName = "coolvetica.ttf";
     String boopMsg = "BOOP!";
     String missMsg = "MISS!";
     TextView tvTimeLeft, tvScoreTitle, tvScore, tvBoop;
     Boolean updateTime = false;
+    Boolean objWillHeal = false;
+    Boolean playerDied;
     Animation ani_bounce;
     int score = 0;
     int totalActiveBoxes = 0;
@@ -53,15 +55,27 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     int objID;
     int boopColor;
     int missColor;
+    int currentSpeed = 1500;
+    public static int msgBgBlueColor;
+    public static int msgBgRedColor;
+    public static int msgBgGreenColor;
+    public static int msgCurrentColor;
+    int boopMargin = 5;
+    int missMargin = 9;
     public static int obj001Value = 0, obj002Value = 0, obj003Value = 0, obj004Value = 0, obj005Value = 0, obj006Value = 0, obj007Value = 0, obj008Value = 0,
             obj009Value = 0, obj010Value = 0, obj011Value = 0, obj012Value = 0, obj013Value = 0, obj014Value = 0, obj015Value = 0, obj016Value = 0;
-    long tillNext;
+    public static String obj001Image, obj002Image, obj003Image, obj004Image, obj005Image, obj006Image, obj007Image, obj008Image, obj009Image,
+            obj010Image, obj011Image, obj012Image, obj013Image, obj014Image, obj015Image, obj016Image;
+    int tillNext;
     boolean timerIsRunning = false;
     boolean zeroHp = false;
     boolean hit = false;
-    String deathMsg;
-    String textBoopBlue = "textBoopBlue";
+    String gameOverMsg;
+    String textBoopBlue = "textWhite";
     String textWhite = "textWhite";
+    String msgBgBlue = "msg_bg_blue";
+    String msgBgRed = "msg_bg_red";
+    String msgBgGreen = "msg_bg_green";
     public static String plusOrMinus = "+";
     ArrayList<Integer> activeObjects = new ArrayList<>();
 
@@ -96,15 +110,18 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
         declareImages();
 
-        // TEXT COLORS
+        // TEXT & MSG BG COLORS
         boopColor = context.getResources().getIdentifier(textBoopBlue, "color", getPackageName());
         missColor = context.getResources().getIdentifier(textWhite, "color", getPackageName());
+        msgBgBlueColor = context.getResources().getIdentifier(msgBgBlue, "drawable", getPackageName());
+        msgBgRedColor = context.getResources().getIdentifier(msgBgRed, "drawable", getPackageName());
+        msgBgGreenColor = context.getResources().getIdentifier(msgBgGreen, "drawable", getPackageName());
+        msgCurrentColor = msgBgBlueColor;
 
         // ANIMATIONS
         ani_bounce = AnimationUtils.loadAnimation(this, R.anim.ani_bounce);
 
-        // DEATH MESSAGE AND OBJECTS SETUP
-        deathMsg = GameInfo.getDeathMsg();
+        // OBJECTS SETUP
         vgBoxes = (ViewGroup) findViewById(R.id.rootLayout);
         disable(vgBoxes);
 
@@ -133,23 +150,22 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         tvTimeLeft.setText("59");
 
         handler001 = new Handler();
+        handler002 = new Handler();
+        handler003 = new Handler();
 
         initiateBoard();
     }
 
+    /* BRINGS UP THE COUNTDOWN, COUNTS DOWN, THEN START PENDULUM A */
     private void initiateBoard(){
-        handler001.postDelayed(new Runnable() {
-            public void run() {
-                dialog = DialogWindows.gameStartWindow("GAME STARTS IN", context, activity, font, handler001);
-                dialog.show();
-            }
-        }, 1500);
+        dialog = DialogWindows.gameStartWindow("GAME STARTS IN", context, activity, font, handler001);
+        dialog.show();
 
         handler001.postDelayed(new Runnable() {
             public void run() {
                 dialog.dismiss();
             }
-        }, 7500);
+        }, 4000);
 
         handler001.postDelayed(new Runnable() {
             public void run() {
@@ -159,11 +175,12 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 enable(vgBoxes);
                 pendulumA();
             }
-        }, 8500);
+        }, 4500);
     }
 
+    /* THIS PENDULUM OPENS BOXES */
     private void pendulumA(){
-        tillNext = Cats.getWaitUntilNext(1500);
+        tillNext = Cats.getWaitUntilNext(currentSpeed);
         setOpenBoxNr();
         handler001.postDelayed(new Runnable() {
             public void run() {
@@ -171,6 +188,11 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                     showBox();
                 }
                 if(totalActiveBoxes < 15 && openNr == 2){
+                    showBox();
+                    showBox();
+                }
+                if(totalActiveBoxes < 14 && openNr == 3){
+                    showBox();
                     showBox();
                     showBox();
                 }
@@ -185,8 +207,9 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         }, tillNext + 500);
     }
 
+    /* THIS PENDULUM OPENS BOXES */
     private void pendulumB(){
-        tillNext = Cats.getWaitUntilNext(1500);
+        tillNext = Cats.getWaitUntilNext(currentSpeed);
         setOpenBoxNr();
         handler001.postDelayed(new Runnable() {
             public void run() {
@@ -196,6 +219,12 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 if(totalActiveBoxes < 15 && openNr == 2){
                     showBox();
                     showBox();
+                }
+                if(totalActiveBoxes < 14 && openNr == 3){
+                    showBox();
+                    showBox();
+                    showBox();
+
                 }
             }
         }, tillNext);
@@ -210,42 +239,48 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
     /* THIS PENDULUM DEALS WITH CLOSING BOXES */
     private void pendulumC(){
-        tillNext = Cats.getWaitUntilNext(1500);
-        if(totalActiveBoxes > 0) {
-            int closeChance = Cats.genRand(100);
-            if (totalActiveBoxes == 1){
-                closePercent = 50;
-                closeNr = 1;
+        tillNext = Cats.getWaitUntilNext(currentSpeed);
+        handler001.postDelayed(new Runnable() {
+            public void run() {
+                if(timerIsRunning){
+                    if(totalActiveBoxes > 0) {
+                        int closeChance = Cats.genRand(100);
+                        if (totalActiveBoxes == 1){
+                            closePercent = 50;
+                            closeNr = 1;
+                        }
+                        if (totalActiveBoxes == 2){
+                            closePercent = 30;
+                            closeNr = 1;
+                        }
+                        if (totalActiveBoxes > 2 && totalActiveBoxes < 5){
+                            closePercent = 25;
+                            closeNr = 2;
+                        }
+                        if (totalActiveBoxes > 3 && totalActiveBoxes < 6){
+                            closePercent = 10;
+                            closeNr = 2;
+                        }
+                        if (totalActiveBoxes > 6){
+                            closePercent = 10;
+                            closeNr = 3;
+                        }
+                        if (closeChance >= closePercent && closeNr == 1) {
+                            hideBox();
+                        }
+                        if (closeChance >= closePercent && closeNr == 2) {
+                            hideBox();
+                            hideBox();
+                        }
+                        if (closeChance >= closePercent && closeNr == 3) {
+                            hideBox();
+                            hideBox();
+                            hideBox();
+                        }
+                    }
+                }
             }
-            if (totalActiveBoxes == 2){
-                closePercent = 30;
-                closeNr = 1;
-            }
-            if (totalActiveBoxes == 3){
-                closePercent = 25;
-                closeNr = 2;
-            }
-            if (totalActiveBoxes == 4){
-                closePercent = 10;
-                closeNr = 2;
-            }
-            if (totalActiveBoxes > 4){
-                closePercent = 10;
-                closeNr = 3;
-            }
-            if (closeChance >= closePercent && closeNr == 1) {
-                hideBox();
-            }
-            if (closeChance >= closePercent && closeNr == 2) {
-                hideBox();
-                hideBox();
-            }
-            if (closeChance >= closePercent && closeNr == 3) {
-                hideBox();
-                hideBox();
-                hideBox();
-            }
-        }
+        }, tillNext);
 
         handler001.postDelayed(new Runnable() {
             public void run() {
@@ -256,250 +291,326 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         }, tillNext + 500);
     }
 
-    private void hitSuccesful(){
-
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.ibObj001:
                 hit = hitOrMiss(0);
                 objID = ibBox001.getId();
+                setObjPlusOrMinus(obj001Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj001Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox001);
                     int index = getIndexToClear(0);
                     activeObjects.set(index, -1);
+                    obj001Value = getObjValue(obj001Image);
+                    setHealOrNot(obj001Image);
                     updateScore(obj001Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj002:
                 hit = hitOrMiss(1);
                 objID = ibBox002.getId();
+                setObjPlusOrMinus(obj002Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj002Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox002);
                     int index = getIndexToClear(1);
                     activeObjects.set(index, -1);
+                    obj002Value = getObjValue(obj002Image);
+                    setHealOrNot(obj002Image);
                     updateScore(obj002Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj003:
                 hit = hitOrMiss(2);
                 objID = ibBox003.getId();
+                setObjPlusOrMinus(obj003Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj003Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox003);
                     int index = getIndexToClear(2);
                     activeObjects.set(index, -1);
+                    obj003Value = getObjValue(obj003Image);
+                    setHealOrNot(obj003Image);
                     updateScore(obj003Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj004:
                 hit = hitOrMiss(3);
                 objID = ibBox004.getId();
+                setObjPlusOrMinus(obj004Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj004Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox004);
                     int index = getIndexToClear(3);
                     activeObjects.set(index, -1);
+                    obj004Value = getObjValue(obj004Image);
+                    setHealOrNot(obj004Image);
                     updateScore(obj004Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj005:
                 hit = hitOrMiss(4);
                 objID = ibBox005.getId();
+                setObjPlusOrMinus(obj005Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj005Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox005);
                     int index = getIndexToClear(4);
                     activeObjects.set(index, -1);
+                    obj005Value = getObjValue(obj005Image);
+                    setHealOrNot(obj005Image);
                     updateScore(obj005Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj006:
                 hit = hitOrMiss(5);
                 objID = ibBox006.getId();
+                setObjPlusOrMinus(obj006Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj006Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox006);
                     int index = getIndexToClear(5);
                     activeObjects.set(index, -1);
+                    obj006Value = getObjValue(obj006Image);
+                    setHealOrNot(obj006Image);
                     updateScore(obj006Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj007:
                 hit = hitOrMiss(6);
                 objID = ibBox007.getId();
+                setObjPlusOrMinus(obj007Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj007Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox007);
                     int index = getIndexToClear(6);
                     activeObjects.set(index, -1);
+                    obj007Value = getObjValue(obj007Image);
+                    setHealOrNot(obj007Image);
                     updateScore(obj007Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj008:
                 hit = hitOrMiss(7);
                 objID = ibBox008.getId();
+                setObjPlusOrMinus(obj008Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj008Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox008);
                     int index = getIndexToClear(7);
                     activeObjects.set(index, -1);
+                    obj008Value = getObjValue(obj008Image);
+                    setHealOrNot(obj008Image);
                     updateScore(obj008Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj009:
                 hit = hitOrMiss(8);
                 objID = ibBox009.getId();
+                setObjPlusOrMinus(obj009Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj009Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox009);
                     int index = getIndexToClear(8);
                     activeObjects.set(index, -1);
+                    obj009Value = getObjValue(obj009Image);
+                    setHealOrNot(obj009Image);
                     updateScore(obj009Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj010:
                 hit = hitOrMiss(9);
                 objID = ibBox010.getId();
+                setObjPlusOrMinus(obj010Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj010Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox010);
                     int index = getIndexToClear(9);
                     activeObjects.set(index, -1);
+                    obj010Value = getObjValue(obj010Image);
+                    setHealOrNot(obj010Image);
                     updateScore(obj010Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj011:
                 hit = hitOrMiss(10);
                 objID = ibBox011.getId();
+                setObjPlusOrMinus(obj011Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj011Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox011);
                     int index = getIndexToClear(10);
                     activeObjects.set(index, -1);
+                    obj011Value = getObjValue(obj011Image);
+                    setHealOrNot(obj011Image);
                     updateScore(obj011Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj012:
                 hit = hitOrMiss(11);
                 objID = ibBox012.getId();
+                setObjPlusOrMinus(obj012Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj012Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox012);
                     int index = getIndexToClear(11);
                     activeObjects.set(index, -1);
+                    obj012Value = getObjValue(obj012Image);
+                    setHealOrNot(obj012Image);
                     updateScore(obj012Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj013:
                 hit = hitOrMiss(12);
                 objID = ibBox013.getId();
+                setObjPlusOrMinus(obj013Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj013Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox013);
                     int index = getIndexToClear(12);
                     activeObjects.set(index, -1);
+                    obj013Value = getObjValue(obj013Image);
+                    setHealOrNot(obj013Image);
                     updateScore(obj013Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj014:
                 hit = hitOrMiss(13);
                 objID = ibBox014.getId();
+                setObjPlusOrMinus(obj014Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj014Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox014);
                     int index = getIndexToClear(13);
                     activeObjects.set(index, -1);
+                    obj014Value = getObjValue(obj014Image);
+                    setHealOrNot(obj014Image);
                     updateScore(obj014Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj015:
                 hit = hitOrMiss(14);
                 objID = ibBox015.getId();
+                setObjPlusOrMinus(obj015Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj015Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox015);
                     int index = getIndexToClear(14);
                     activeObjects.set(index, -1);
+                    obj015Value = getObjValue(obj015Image);
+                    setHealOrNot(obj015Image);
                     updateScore(obj015Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
             case R.id.ibObj016:
                 hit = hitOrMiss(15);
                 objID = ibBox016.getId();
+                setObjPlusOrMinus(obj016Image);
                 if (hit){
-                    animateMsg(objID, boopMsg, boopColor);
+                    setCurrentColor(obj016Image);
+                    animateMsg(objID, boopMsg, boopColor, boopMargin, msgCurrentColor);
                     totalActiveBoxes--;
                     Cats.hideObj(ibBox016);
                     int index = getIndexToClear(15);
                     activeObjects.set(index, -1);
+                    obj016Value = getObjValue(obj016Image);
+                    setHealOrNot(obj016Image);
                     updateScore(obj016Value, plusOrMinus);
                 } else {
-                    animateMsg(objID, missMsg, missColor);
+                    msgCurrentColor = msgBgRedColor;
+                    animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
                     updateScore(1, "-");
                 }
                 break;
@@ -728,24 +839,82 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         ibBox016.setOnClickListener(this);
     }
 
+    private void setCurrentColor(String objImage){
+        switch (objImage) {
+            case "box_cat_normal":
+                msgCurrentColor = msgBgBlueColor;
+                break;
+            case "box_cat_lucky":
+                msgCurrentColor = msgBgGreenColor;
+                break;
+            case "box_cat_bad":
+                msgCurrentColor = msgBgRedColor;
+                break;
+        }
+    }
+
+    private void setHealOrNot(String objImage){
+        switch (objImage) {
+            case "box_cat_normal":
+                objWillHeal = false;
+                break;
+            case "box_cat_lucky":
+                objWillHeal = true;
+                break;
+            case "box_cat_bad":
+                objWillHeal = false;
+                break;
+        }
+    }
+
+    private void setObjPlusOrMinus(String objImage){
+        switch (objImage) {
+            case "box_cat_normal":
+                plusOrMinus = "+";
+                break;
+            case "box_cat_lucky":
+                plusOrMinus = "+";
+                break;
+            case "box_cat_bad":
+                plusOrMinus = "-";
+                break;
+        }
+    }
+
+    private int getObjValue(String objImage) {
+        switch (objImage) {
+            case "box_cat_normal":
+                return 1;
+            case "box_cat_lucky":
+                return 2;
+            case "box_cat_bad":
+                return 1;
+        }
+        return 0;
+    }
+
     public int getIndexToClear(int boxNr){
         return activeObjects.indexOf(boxNr);
     }
 
     private void updateScore(int value, String sign){
+        int progress = lifeBar.getProgress();
         if(sign.equals("-")){
             score = score - value;
             tvScore.setText(String.valueOf(score));
-            int progress = lifeBar.getProgress();
             hp = hp - 20;
-            ObjectAnimator animation = ObjectAnimator.ofInt(lifeBar, "progress", progress - 20);
-            animation.setDuration(500);
-            animation.setInterpolator(new DecelerateInterpolator());
-            animation.start();
+            lifeBar.setProgress(progress - 20);
             if(hp <= 0){
                 zeroHp = true;
             }
         } else {
+            if(objWillHeal){
+                hp = hp + 10;
+                lifeBar.setProgress(progress + 10);
+                if(hp > 100){
+                    hp = 100;
+                }
+            }
             score = score + value;
             tvScore.setText(String.valueOf(score));
         }
@@ -757,17 +926,20 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         return occurrences > 0;
     }
 
-    private void animateMsg(int objId, String msg, int color) /* + int margin */{
+    private void animateMsg(int objId, String msg, int color, int leftMargin, int msgBgColor){
         tvBoop.setVisibility(View.VISIBLE);
         tvBoop.setText(msg);
         tvBoop.setTextColor(getResources().getColor(color));
+        tvBoop.setBackground(getResources().getDrawable(msgBgColor));
 
         RelativeLayout.LayoutParams objMsgSettings = (RelativeLayout.LayoutParams) tvBoop.getLayoutParams();
         objMsgSettings.addRule(RelativeLayout.ABOVE, objId);
 
+        int marginToSet = convertToDp(leftMargin);
+
         objMsgSettings.addRule(RelativeLayout.ALIGN_LEFT, objId);
         objMsgSettings.addRule(RelativeLayout.ALIGN_RIGHT, 0);
-        //objMsgSettings.setMargins(margin, 0, 0 , 0);
+        objMsgSettings.setMargins(marginToSet, 0, 0 , 0);
 
         tvBoop.setLayoutParams(objMsgSettings);
         tvBoop.startAnimation(ani_bounce);
@@ -781,21 +953,28 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     }
 
     private void showBox(){
+        int locationToShow = Cats.getLocationToShow(activeObjects);
         String showOrHide = "Show";
         String objToShow = Cats.getObjImgName();
-        int locationToShow = Cats.getLocationToShow(activeObjects);
         ImageButton viewToShow = setViewToSend(locationToShow, showOrHide);
         Cats.setObjValue(locationToShow, objToShow);
         Cats.showObj(viewToShow, objToShow, context);
     }
 
     private void setOpenBoxNr(){
-        if(totalActiveBoxes < 5){
+        if(totalActiveBoxes < 5 && currentSpeed >= 1100){
             openPercent = Cats.genRand(100);
-            if (openPercent > 65){
+            if (openPercent > 30){
                 openNr = 2;
             } else {
                 openNr = 1;
+            }
+        } else if(totalActiveBoxes < 5 && currentSpeed <= 900) {
+            openPercent = Cats.genRand(100);
+            if (openPercent > 30){
+                openNr = 3;
+            } else {
+                openNr = 2;
             }
         } else {
             openNr = 1;
@@ -830,6 +1009,17 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
     }
 
+    private int convertToDp(int margin){
+        Resources r = context.getResources();
+        int dp;
+        dp = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                margin,
+                r.getDisplayMetrics()
+        );
+        return dp;
+    }
+
     public class CountDown extends CountDownTimer {
 
         public CountDown(long startTime, long interval) {
@@ -839,7 +1029,9 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         @Override
         public void onTick(long millisUntilFinished) {
             if(zeroHp){
-                dialog = DialogWindows.youDiedWindow("YOU DIED!", context, activity, "Restart", font, "Restart", "Exit", deathMsg);
+                playerDied = true;
+                gameOverMsg = GameInfo.getGameOverMsg(playerDied, score);
+                dialog = DialogWindows.gameOverWindow("YOU DIED!", context, activity, font, "Restart", "Exit", gameOverMsg);
                 dialog.show();
                 timerIsRunning = false;
                 disable(vgBoxes);
@@ -854,6 +1046,18 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 }
                 updateTimer(newTime, interval);
             }
+            if(millisUntilFinished < 50000){
+                currentSpeed = 1300;
+            }
+            if(millisUntilFinished < 40000){
+                currentSpeed = 1100;
+            }
+            if(millisUntilFinished < 30000){
+                currentSpeed = 900;
+            }
+            if(millisUntilFinished < 20000){
+                currentSpeed = 700;
+            }
             tvTimeLeft.setText("" + String.format("%d",
                     TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
                             TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
@@ -862,7 +1066,10 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
         @Override
         public void onFinish() {
-            tvTimeLeft.setText("Time's up!");
+            playerDied = false;
+            gameOverMsg = GameInfo.getGameOverMsg(playerDied, score);
+            dialog = DialogWindows.gameOverWindow("Time's Up!", context, activity, font, "Retry", "Exit", gameOverMsg);
+            dialog.show();
             timerIsRunning = false;
             disable(vgBoxes);
         }
