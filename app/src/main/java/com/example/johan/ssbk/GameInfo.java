@@ -26,7 +26,7 @@ public class GameInfo {
                 case 4:
                     return "You'll do better next time!";
                 case 5:
-                    return "So close!";
+                    return "You gotta be more careful..";
             }
         } else {
             if(score < 20) {
@@ -75,7 +75,7 @@ public class GameInfo {
                         return "Great work!";
                 }
             }
-            if(score >= 51) {
+            if(score >= 51 && score < 61) {
                 int chance = genRand(3);
                 switch (chance) {
                     case 0:
@@ -84,6 +84,17 @@ public class GameInfo {
                         return "Fantastic!";
                     case 2:
                         return "Excellent!";
+                }
+            }
+            if(score >= 61) {
+                int chance = genRand(3);
+                switch (chance) {
+                    case 0:
+                        return "Wow, are your fingers on fire?";
+                    case 1:
+                        return "Can I have your autograph?";
+                    case 2:
+                        return "Almost perfect!";
                 }
             }
         }

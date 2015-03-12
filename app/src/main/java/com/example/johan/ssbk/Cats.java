@@ -18,13 +18,12 @@ public class Cats {
     static int objImg;
     static int normalCatValue = 1;
     static int luckyCatValue = 2;
-    static int badCatValue = 1;
+    static int badCatValue = 5;
     static String normalCat = "box_cat_normal";
     static String luckyCat = "box_cat_lucky";
     static String badCat = "box_cat_bad";
     static String plus = "+";
     static String minus = "-";
-    static Handler handler;
 
     public static int genRand(int number) {
         return new Random().nextInt(number);
@@ -67,11 +66,11 @@ public class Cats {
 
     public static String getObjImgName(){
         int boxChance = genRand(100);
-        if(boxChance <= 10){
+        if(boxChance <= 5){
             return luckyCat;
-        } else if(boxChance >= 11 && boxChance <= 30){
+        } else if(boxChance >= 6 && boxChance <= 20){
             return badCat;
-        } else if(boxChance > 30 ){
+        } else if(boxChance > 20 ){
             return normalCat;
         }
         return "";

@@ -44,7 +44,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     Boolean updateTime = false;
     Boolean objWillHeal = false;
     Boolean playerDied;
-    Animation ani_bounce;
+    Animation ani_bounce, ani_scoregain, ani_shake;
     int score = 0;
     int totalActiveBoxes = 0;
     int closePercent = 0;
@@ -53,6 +53,8 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     int openNr = 0;
     int hp = 100;
     int objID;
+    int greenText;
+    int redText;
     int boopColor;
     int missColor;
     int currentSpeed = 1500;
@@ -64,13 +66,16 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     int missMargin = 9;
     public static int obj001Value = 0, obj002Value = 0, obj003Value = 0, obj004Value = 0, obj005Value = 0, obj006Value = 0, obj007Value = 0, obj008Value = 0,
             obj009Value = 0, obj010Value = 0, obj011Value = 0, obj012Value = 0, obj013Value = 0, obj014Value = 0, obj015Value = 0, obj016Value = 0;
-    public static String obj001Image, obj002Image, obj003Image, obj004Image, obj005Image, obj006Image, obj007Image, obj008Image, obj009Image,
-            obj010Image, obj011Image, obj012Image, obj013Image, obj014Image, obj015Image, obj016Image;
+    public static String obj001Image = "", obj002Image = "", obj003Image = "", obj004Image = "", obj005Image = "", obj006Image = "", obj007Image = "",
+            obj008Image = "", obj009Image = "",obj010Image = "", obj011Image = "", obj012Image = "", obj013Image = "", obj014Image = "",
+            obj015Image = "", obj016Image = "";
     int tillNext;
     boolean timerIsRunning = false;
     boolean zeroHp = false;
     boolean hit = false;
     String gameOverMsg;
+    String textGreen = "supergreen";
+    String textRed = "textBrightRed";
     String textBoopBlue = "textWhite";
     String textWhite = "textWhite";
     String msgBgBlue = "msg_bg_blue";
@@ -85,7 +90,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_newplayscreen);
+        setContentView(R.layout.activity_playscreen001);
 
         context = Activity_PlayScreen.this;
         activity = Activity_PlayScreen.this;
@@ -113,6 +118,8 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         // TEXT & MSG BG COLORS
         boopColor = context.getResources().getIdentifier(textBoopBlue, "color", getPackageName());
         missColor = context.getResources().getIdentifier(textWhite, "color", getPackageName());
+        greenText = context.getResources().getIdentifier(textGreen, "color", getPackageName());
+        redText = context.getResources().getIdentifier(textRed, "color", getPackageName());
         msgBgBlueColor = context.getResources().getIdentifier(msgBgBlue, "drawable", getPackageName());
         msgBgRedColor = context.getResources().getIdentifier(msgBgRed, "drawable", getPackageName());
         msgBgGreenColor = context.getResources().getIdentifier(msgBgGreen, "drawable", getPackageName());
@@ -120,6 +127,8 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
         // ANIMATIONS
         ani_bounce = AnimationUtils.loadAnimation(this, R.anim.ani_bounce);
+        ani_scoregain = AnimationUtils.loadAnimation(this, R.anim.ani_scoregain);
+        ani_shake = AnimationUtils.loadAnimation(this, R.anim.ani_shake);
 
         // OBJECTS SETUP
         vgBoxes = (ViewGroup) findViewById(R.id.rootLayout);
@@ -311,7 +320,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj002:
@@ -331,7 +340,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj003:
@@ -351,7 +360,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj004:
@@ -371,7 +380,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj005:
@@ -391,7 +400,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj006:
@@ -411,7 +420,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj007:
@@ -431,7 +440,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj008:
@@ -451,7 +460,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj009:
@@ -471,7 +480,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj010:
@@ -491,7 +500,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj011:
@@ -511,7 +520,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj012:
@@ -531,7 +540,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj013:
@@ -551,7 +560,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj014:
@@ -571,7 +580,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj015:
@@ -591,7 +600,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
             case R.id.ibObj016:
@@ -611,7 +620,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
                 } else {
                     msgCurrentColor = msgBgRedColor;
                     animateMsg(objID, missMsg, missColor, missMargin, msgCurrentColor);
-                    updateScore(1, "-");
+                    updateScore(3, "-");
                 }
                 break;
         }
@@ -878,6 +887,9 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
             case "box_cat_bad":
                 plusOrMinus = "-";
                 break;
+            case "":
+                plusOrMinus = "-";
+                break;
         }
     }
 
@@ -888,7 +900,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
             case "box_cat_lucky":
                 return 2;
             case "box_cat_bad":
-                return 1;
+                return 5;
         }
         return 0;
     }
@@ -901,24 +913,30 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         int progress = lifeBar.getProgress();
         if(sign.equals("-")){
             score = score - value;
+            if(score < 0){
+                score = 0;
+            }
+            tvScore.setTextColor(getResources().getColor(redText));
             tvScore.setText(String.valueOf(score));
+            tvScore.startAnimation(ani_shake);
             hp = hp - 20;
             lifeBar.setProgress(progress - 20);
             if(hp <= 0){
                 zeroHp = true;
             }
         } else {
-            if(objWillHeal){
+            if (objWillHeal) {
                 hp = hp + 10;
                 lifeBar.setProgress(progress + 10);
-                if(hp > 100){
+                if (hp > 100) {
                     hp = 100;
                 }
             }
             score = score + value;
+            tvScore.setTextColor(getResources().getColor(greenText));
             tvScore.setText(String.valueOf(score));
+            tvScore.startAnimation(ani_scoregain);
         }
-
     }
 
     public boolean hitOrMiss(int boxNr){
