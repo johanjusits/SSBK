@@ -26,7 +26,8 @@
         android:textColor="#fff8b200"
         android:textSize="36sp"
         android:layout_above="@+id/tvScore"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -37,17 +38,20 @@
         android:textColor="#FFFFFF"
         android:textSize="36sp"
         android:layout_above="@+id/pbLifeBar"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp" />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="256dp"
-        android:layout_height="32dp"
+        android:layout_height="16dp"
         android:id="@+id/pbLifeBar"
         android:layout_gravity="center_horizontal"
         android:progress="100"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:indeterminate="false"
+        android:layout_marginBottom="6dp" />
 
     <TextView
         android:layout_width="wrap_content"
