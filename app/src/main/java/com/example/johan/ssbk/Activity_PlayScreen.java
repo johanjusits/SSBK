@@ -40,11 +40,11 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
     String fontName = "coolvetica.ttf";
     String boopMsg = "BOOP!";
     String missMsg = "MISS!";
-    TextView tvTimeLeft, tvScoreTitle, tvScore, tvBoop;
+    TextView tvTimeLeft, tvScoreTitle, tvScore, tvBoop, tvCountDown;
     Boolean updateTime = false;
     Boolean objWillHeal = false;
     Boolean playerDied;
-    Animation ani_bounce, ani_scoregain, ani_shake;
+    Animation ani_bounce, ani_scoregain, ani_shake, ani_countdown;
     int score = 0;
     int totalActiveBoxes = 0;
     int closePercent = 0;
@@ -129,6 +129,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         ani_bounce = AnimationUtils.loadAnimation(this, R.anim.ani_bounce);
         ani_scoregain = AnimationUtils.loadAnimation(this, R.anim.ani_scoregain);
         ani_shake = AnimationUtils.loadAnimation(this, R.anim.ani_shake);
+        ani_countdown = AnimationUtils.loadAnimation(this, R.anim.ani_countdown);
 
         // OBJECTS SETUP
         vgBoxes = (ViewGroup) findViewById(R.id.rootLayout);
@@ -147,12 +148,15 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         tvScoreTitle = (TextView) findViewById(R.id.tvScoreTitle);
         tvScore = (TextView) findViewById(R.id.tvScore);
         tvBoop = (TextView) findViewById(R.id.tvBoop);
+        tvCountDown = (TextView) findViewById(R.id.tvCountdown);
 
         tvTimeLeft.setTypeface(font);
         tvScoreTitle.setTypeface(font);
         tvScore.setTypeface(font);
         tvBoop.setTypeface(font);
+        tvCountDown.setTypeface(font);
         tvBoop.bringToFront();
+        tvCountDown.bringToFront();
 
         tvScore.setText(String.valueOf(score));
 
@@ -167,24 +171,45 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
 
     /* BRINGS UP THE COUNTDOWN, COUNTS DOWN, THEN START PENDULUM A */
     private void initiateBoard(){
-        dialog = DialogWindows.gameStartWindow("GAME STARTS IN", context, activity, font, handler001);
-        dialog.show();
 
         handler001.postDelayed(new Runnable() {
             public void run() {
-                dialog.dismiss();
+                tvCountDown.setVisibility(View.VISIBLE);
+                tvCountDown.startAnimation(ani_countdown);
+            }
+        }, 1000);
+
+        handler001.postDelayed(new Runnable() {
+            public void run() {
+               tvCountDown.setText("2");
+               tvCountDown.startAnimation(ani_countdown);
+            }
+        }, 2000);
+
+        handler001.postDelayed(new Runnable() {
+            public void run() {
+                tvCountDown.setText("1");
+                tvCountDown.startAnimation(ani_countdown);
+            }
+        }, 3000);
+
+        handler001.postDelayed(new Runnable() {
+            public void run() {
+                tvCountDown.setText("GO!");
+                tvCountDown.startAnimation(ani_countdown);
             }
         }, 4000);
 
         handler001.postDelayed(new Runnable() {
             public void run() {
+                tvCountDown.setVisibility(View.GONE);
                 CountDown counter = new CountDown(startTime, interval);
                 counter.start();
                 timerIsRunning = true;
                 enable(vgBoxes);
                 pendulumA();
             }
-        }, 4500);
+        }, 5000);
     }
 
     /* THIS PENDULUM OPENS BOXES */
@@ -1049,7 +1074,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
             if(zeroHp){
                 playerDied = true;
                 gameOverMsg = GameInfo.getGameOverMsg(playerDied, score);
-                dialog = DialogWindows.gameOverWindow("YOU DIED!", context, activity, font, "Restart", "Exit", gameOverMsg);
+                dialog = DialogWindows.gameOverWindow("YOU DIED!", context, activity, font, "Restart", "Exit", gameOverMsg, score);
                 dialog.show();
                 timerIsRunning = false;
                 disable(vgBoxes);
@@ -1086,7 +1111,7 @@ public class Activity_PlayScreen extends Activity implements View.OnClickListene
         public void onFinish() {
             playerDied = false;
             gameOverMsg = GameInfo.getGameOverMsg(playerDied, score);
-            dialog = DialogWindows.gameOverWindow("Time's Up!", context, activity, font, "Retry", "Exit", gameOverMsg);
+            dialog = DialogWindows.gameOverWindow("Time's Up!", context, activity, font, "Retry", "Exit", gameOverMsg, score);
             dialog.show();
             timerIsRunning = false;
             disable(vgBoxes);
