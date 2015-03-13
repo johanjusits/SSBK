@@ -84,7 +84,7 @@ public class DialogWindows {
     }
 
     public static Dialog gameOverWindow(String msg, final Context context, final Activity activity, Typeface font,
-                                        String yesButtonText, String noButtonText, String gameOverMsg){
+                                        String yesButtonText, String noButtonText, String gameOverMsg, int finalScore){
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_youdied);
@@ -93,10 +93,13 @@ public class DialogWindows {
 
         TextView tvText = (TextView) dialog.findViewById(R.id.tvMsg);
         TextView tvDeathMsg = (TextView) dialog.findViewById(R.id.tvRdmDeathMsg);
+        TextView tvFinalScore = (TextView) dialog.findViewById(R.id.tvFinalScore);
         tvText.setText(msg);
         tvDeathMsg.setText(gameOverMsg);
+        tvFinalScore.setText(String.valueOf(finalScore) + "p");
         tvText.setTypeface(font);
         tvDeathMsg.setTypeface(font);
+        tvFinalScore.setTypeface(font);
 
         /* YES CLICKED */
         Button buttonDialogYes = (Button) dialog.findViewById(R.id.bConfirmOk);
@@ -121,41 +124,6 @@ public class DialogWindows {
                 activity.finish();
             }
         });
-
-        return dialog;
-    }
-
-    public static Dialog gameStartWindow(String msg, final Context context, final Activity activity, Typeface font, Handler handler){
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_gamestart);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(TRANSPARENT));
-        dialog.setCancelable(false);
-
-        TextView tvText = (TextView) dialog.findViewById(R.id.tvMsg);
-        final TextView tvCountDown = (TextView) dialog.findViewById(R.id.tvCountdown);
-        tvText.setText(msg);
-        tvText.setTypeface(font);
-        tvCountDown.setTypeface(font);
-        tvCountDown.setText("00:03");
-
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                tvCountDown.setText("00:02");
-            }
-        }, 1000);
-
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                tvCountDown.setText("00:01");
-            }
-        }, 2000);
-
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                tvCountDown.setText("00:00");
-            }
-        }, 3000);
 
         return dialog;
     }
